@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
+import GlowSparks from './GlowSparks'
 
 export default function ArtDesign() {
   const artRef = useRef(null)
@@ -85,6 +86,10 @@ export default function ArtDesign() {
         overflow: 'hidden',
         zIndex: 8
       }}
-    />
+    >
+
+        <GlowSparks />
+
+    </div>
   )
 }
