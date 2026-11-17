@@ -1,0 +1,82 @@
+export const technologies = [
+  "React",
+  "Next.js",
+  "Node.js",
+  "JavaScript",
+  "Python",
+  "FastAPI",
+  "Firebase",
+  "MongoDB",
+  "MySQL",
+  "Three.js",
+  "Tailwind CSS",
+  "AWS",
+];
+
+export const hero_cards = [
+    {
+      title: 'AI',
+      subtext: 'Intelligent automation & LLM integrations.',
+      href: '/services/ai',
+      // top-left band
+      minX: 8, maxX: 30, minY: 6, maxY: 28,
+      wiggleSpeed: 0.00026,
+      wiggleAmp: 1.0,
+      wiggleYAmp: 2.5,
+      wigglePhase: 0.4,
+      glowVar: '--primary-glow',
+      width: 140,
+    },
+    {
+      title: '3D',
+      subtext: 'Interactive WebGL & product visuals.',
+      href: '/services/3d',
+      // top-right band
+      minX: 70, maxX: 92, minY: 10, maxY: 32,
+      wiggleSpeed: 0.00019,
+      wiggleAmp: 0.7,
+      wiggleYAmp: 2,
+      wigglePhase: 2.1,
+      glowVar: '--secondary-glow',
+      width: 140,
+    },
+    {
+      title: 'Web',
+      subtext: 'Fast, responsive, SEO-ready sites.',
+      href: '/services/web',
+      // bottom-left band
+      minX: 5, maxX: 26, minY: 68, maxY: 90,
+      wiggleSpeed: 0.00022,
+      wiggleAmp: 0.9,
+      wiggleYAmp: 2.2,
+      wigglePhase: 4.3,
+      glowVar: '--secondary-glow',
+      width: 140,
+    },
+    {
+      title: 'Mobile',
+      subtext: 'Responsive, platform-independent application for Mobile.',
+      href: '/services/ai',
+      // top-left band
+      minX: 8, maxX: 30, minY: 6, maxY: 28,
+      wiggleSpeed: 0.00026,
+      wiggleAmp: 1.0,
+      wiggleYAmp: 2.5,
+      wigglePhase: 0.4,
+      glowVar: '--primary-glow',
+      width: 140,
+    },
+    {
+      title: 'Cloud',
+      subtext: 'Scalable infra & DevOps.',
+      href: '/services/cloud',
+      // bottom-right band
+      minX: 72, maxX: 94, minY: 66, maxY: 90,
+      wiggleSpeed: 0.0003,
+      wiggleAmp: 0.6,
+      wiggleYAmp: 1.8,
+      wigglePhase: 1.2,
+      glowVar: '--primary-glow',
+      width: 140,
+    },
+  ]
