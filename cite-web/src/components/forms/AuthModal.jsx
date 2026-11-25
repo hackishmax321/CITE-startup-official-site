@@ -6,6 +6,7 @@ import { X, Mail, Lock, User, Eye, EyeOff, ArrowRight, CheckCircle2 } from "luci
 import BrainCanvas from "../designs/login_design/BrainCanvas";
 import './forms.css'
 import GlowSparks from "../designs/hero_design/GlowSparks";
+import CenteredGlowSparks from "../designs/hero_design/CenterGlowSpark";
 
 const EASE = [0.22, 1, 0.36, 1];
 
@@ -161,9 +162,24 @@ export default function AuthModal({ open, onClose, defaultMode = "login" }) {
             <button
               onClick={onClose}
               aria-label="Close"
-              className="absolute right-3 top-3 z-30 flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-black/20 text-white/80 transition hover:bg-black/40 hover:text-white"
+              className="
+                group absolute right-3 top-3 z-30
+                flex h-9 w-9 items-center justify-center rounded-full
+                border border-white/20 bg-black/30 text-white
+                transition-colors duration-500 ease-in-out
+                hover:text-white
+                before:pointer-events-none before:absolute before:inset-0 before:rounded-full
+                before:opacity-90 before:transition-opacity before:duration-700 before:ease-in-out
+                before:bg-[radial-gradient(circle,rgba(120,180,255,0.95),rgba(60,220,240,0.55)_45%,transparent_72%)]
+                before:blur-md
+                after:pointer-events-none after:absolute after:-inset-1.5 after:rounded-full
+                after:opacity-70 after:transition-opacity after:duration-700 after:ease-in-out
+                after:bg-[radial-gradient(circle,rgba(180,130,255,0.85),rgba(140,200,255,0.45)_50%,transparent_75%)]
+                after:blur-xl
+                hover:before:opacity-100 hover:after:opacity-100
+              "
             >
-              <X className="h-4 w-4" />
+              <X className="relative z-10 h-4 w-4 drop-shadow-[0_0_10px_rgba(120,180,255,1)] drop-shadow-[0_0_18px_rgba(60,220,240,0.8)]" />
             </button>
 
             {/* ---------- LEFT: 3D Brain side ---------- */}
@@ -475,7 +491,7 @@ export default function AuthModal({ open, onClose, defaultMode = "login" }) {
                   alt=""
                   className="h-auto w-full drop-shadow-[0_10px_30px_rgba(56,232,210,0.35)]"
                 />
-                <GlowSparks />
+                <CenteredGlowSparks />
               </div>
             </motion.div>
           </motion.div>
