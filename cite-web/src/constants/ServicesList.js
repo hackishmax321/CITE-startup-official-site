@@ -26,6 +26,16 @@ export const services = [
     symbol: "◇",
     color: "text-highlight",
   },
+  {
+    number: "04",
+    title: "Global Reach",
+    description:
+      "Delivering digital solutions to clients across Sri Lanka, Australia, and beyond — local roots, worldwide impact.",
+    symbol: "🌐",
+    color: "text-primary",
+    tags: ["Sri Lanka", "Australia", "Worldwide"],
+    type: "globe", // 👈 trigger for Globe card
+  },
 ];
 
 export const approach = [

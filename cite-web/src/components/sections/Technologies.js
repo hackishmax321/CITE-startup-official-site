@@ -1,69 +1,51 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState, useEffect, useRef } from "react"
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion"
 import { technologies } from "@/constants/TechnologiesList"
 import {
   Code2, Database, Cloud, Server, Smartphone, Palette, GitBranch,
-  Layers, Cpu, Globe, Boxes, Terminal, Zap, Shield, Rocket,
-  Binary, Braces, Workflow, MonitorSmartphone, Container,
+  Layers, Cpu, Globe, Boxes, Terminal, Zap, Binary, Braces,
+  Workflow, MonitorSmartphone, Container,
 } from "lucide-react"
 
 const EASE = [0.22, 1, 0.36, 1]
 
-// ---- Map tech names → Lucide icons. Extend to match your list.
 const iconMap = {
-  react: Code2,
-  nextjs: Globe,
-  typescript: Braces,
-  javascript: Binary,
-  node: Server,
-  "node.js": Server,
-  express: Terminal,
-  mongodb: Database,
-  postgresql: Database,
-  mysql: Database,
-  redis: Database,
-  prisma: Layers,
-  tailwind: Palette,
-  "tailwind css": Palette,
-  css: Palette,
-  html: Code2,
-  git: GitBranch,
-  github: GitBranch,
-  docker: Container,
-  aws: Cloud,
-  vercel: Rocket,
-  firebase: Zap,
-  graphql: Workflow,
-  python: Terminal,
-  figma: MonitorSmartphone,
-  "react native": Smartphone,
-  flutter: Smartphone,
-  kubernetes: Boxes,
-  linux: Cpu,
-  default: Code2,
+  react: Code2, nextjs: Globe, typescript: Braces, javascript: Binary,
+  node: Server, "node.js": Server, express: Terminal, mongodb: Database,
+  postgresql: Database, mysql: Database, redis: Database, prisma: Layers,
+  tailwind: Palette, "tailwind css": Palette, css: Palette, html: Code2,
+  git: GitBranch, github: GitBranch, docker: Container, aws: Cloud,
+  vercel: Zap, firebase: Zap, graphql: Workflow, python: Terminal,
+  figma: MonitorSmartphone, "react native": Smartphone, flutter: Smartphone,
+  kubernetes: Boxes, linux: Cpu, default: Code2,
 }
 
-const getIcon = (name = "") => {
-  const key = name.toLowerCase().trim()
-  return iconMap[key] || iconMap.default
-}
+const getIcon = (name = "") =>
+  iconMap[name.toLowerCase().trim()] || iconMap.default
 
-// Precompute tokens with icon + orbit angle
-const tokens = technologies.map((name, i) => ({
-  id: `tech-${i}-${name}`,
-  name,
-  Icon: getIcon(name),
-  angle: (i / technologies.length) * Math.PI * 2,
-}))
+// Precompute percentage positions (stable strings, identical server/client)
+const tokens = technologies.map((name, i) => {
+  const angle = (i / technologies.length) * Math.PI * 2 - Math.PI / 2
+  // Orbit radius as % of the container
+  const radiusPct = 42
+  const left = 50 + Math.cos(angle) * radiusPct
+  const top = 50 + Math.sin(angle) * radiusPct
+  return {
+    id: `tech-${i}-${name}`,
+    name,
+    Icon: getIcon(name),
+    // String styles — no motion math, no float drift
+    leftStyle: `${left.toFixed(2)}%`,
+    topStyle: `${top.toFixed(2)}%`,
+  }
+})
 
-// ---------- Scroll reveal variants for heading ----------
 const container = {
   hidden: {},
   show: { transition: { staggerChildren: 0.06, delayChildren: 0.1 } },
 }
-
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
   show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: EASE } },
@@ -73,7 +55,6 @@ function Technologies() {
   const sectionRef = useRef(null)
   const [activeIndex, setActiveIndex] = useState(null)
 
-  // Scroll-linked parallax for the orbit ring
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start end", "end start"],
@@ -82,7 +63,6 @@ function Technologies() {
   const ringRotate = useTransform(scrollYProgress, [0, 1], [0, 120])
   const ringScale = useTransform(scrollYProgress, [0, 0.5, 1], [0.92, 1, 1.05])
 
-  // Active token — falls back to first token for the idle state
   const active = activeIndex !== null ? tokens[activeIndex] : tokens[0]
   const ActiveIcon = active.Icon
 
@@ -92,7 +72,6 @@ function Technologies() {
       id="technologies"
       className="relative overflow-hidden bg-surface px-6 py-24"
     >
-      {/* Ambient glow */}
       <div
         aria-hidden
         className="pointer-events-none absolute left-1/2 top-40 h-[600px] w-[600px] -translate-x-1/2 rounded-full opacity-30 blur-3xl"
@@ -103,7 +82,6 @@ function Technologies() {
       />
 
       <div className="relative mx-auto max-w-7xl text-center">
-        {/* ---------- Heading ---------- */}
         <motion.div
           variants={container}
           initial="hidden"
@@ -131,9 +109,7 @@ function Technologies() {
           </motion.p>
         </motion.div>
 
-        {/* ---------- Orbiting wheel ---------- */}
         <div className="relative mx-auto mt-20 flex h-[480px] w-full max-w-[560px] items-center justify-center sm:h-[560px]">
-          {/* Outer decorative rings */}
           <div
             aria-hidden
             className="absolute inset-0 rounded-full border border-border/60"
@@ -145,11 +121,13 @@ function Technologies() {
             style={{ transform: "scale(0.78)" }}
           />
 
-          {/* Rotating orbit layer (pauses on hover via activeIndex) */}
+          {/* Scroll-parallax wrapper — motion only animates rotate/scale,
+              never layout position */}
           <motion.div
             className="absolute inset-0"
             style={{ rotate: ringRotate, scale: ringScale }}
           >
+            {/* Auto-spin wrapper */}
             <motion.div
               className="relative h-full w-full"
               animate={{ rotate: activeIndex !== null ? 0 : 360 }}
@@ -161,63 +139,65 @@ function Technologies() {
             >
               {tokens.map((token, i) => {
                 const Icon = token.Icon
-                const radius = 200
-                const x = Math.cos(token.angle) * radius
-                const y = Math.sin(token.angle) * radius
                 const isActive = activeIndex === i
 
                 return (
-                  <motion.button
+                  <div
                     key={token.id}
-                    type="button"
-                    onMouseEnter={() => setActiveIndex(i)}
-                    onMouseLeave={() => setActiveIndex(null)}
-                    onFocus={() => setActiveIndex(i)}
-                    onBlur={() => setActiveIndex(null)}
-                    aria-label={token.name}
-                    className="absolute left-1/2 top-1/2 flex h-14 w-14 items-center justify-center rounded-2xl border bg-surface-elevated shadow-lg outline-none"
-                    style={{
-                      x,
-                      y,
-                      translateX: "-50%",
-                      translateY: "-50%",
-                    }}
-                    animate={{
-                      scale: isActive ? 1.25 : 1,
-                      borderColor: isActive ? "var(--primary)" : "var(--border)",
-                      boxShadow: isActive
-                        ? "0 0 30px -4px var(--primary)"
-                        : "0 8px 20px -8px rgba(0,0,0,0.4)",
-                    }}
-                    transition={{ type: "spring", stiffness: 280, damping: 20 }}
-                    whileHover={{ zIndex: 10 }}
+                    // STATIC positioning — % based, no motion transform.
+                    // Always identical between server and client.
+                    className="absolute -translate-x-1/2 -translate-y-1/2"
+                    style={{ left: token.leftStyle, top: token.topStyle }}
                   >
-                    {/* Counter-rotate so icons stay upright */}
-                    <motion.span
-                      className="flex h-full w-full items-center justify-center"
-                      animate={{ rotate: activeIndex !== null ? 0 : -360 }}
+                    <motion.button
+                      type="button"
+                      onMouseEnter={() => setActiveIndex(i)}
+                      onMouseLeave={() => setActiveIndex(null)}
+                      onFocus={() => setActiveIndex(i)}
+                      onBlur={() => setActiveIndex(null)}
+                      aria-label={token.name}
+                      className="flex h-14 w-14 items-center justify-center rounded-2xl border bg-surface-elevated shadow-lg outline-none"
+                      // Only animate visual properties — NEVER x/y
+                      animate={{
+                        scale: isActive ? 1.25 : 1,
+                        borderColor: isActive
+                          ? "var(--primary)"
+                          : "var(--border)",
+                        boxShadow: isActive
+                          ? "0 0 30px -4px var(--primary)"
+                          : "0 8px 20px -8px rgba(0,0,0,0.4)",
+                      }}
                       transition={{
-                        duration: 60,
-                        repeat: activeIndex !== null ? 0 : Infinity,
-                        ease: "linear",
+                        type: "spring",
+                        stiffness: 280,
+                        damping: 20,
                       }}
                     >
-                      <Icon
-                        className={`h-6 w-6 transition-colors ${
-                          isActive ? "text-primary" : "text-muted"
-                        }`}
-                        strokeWidth={1.8}
-                      />
-                    </motion.span>
-                  </motion.button>
+                      {/* Counter-rotate to keep icon upright */}
+                      <motion.span
+                        className="flex h-full w-full items-center justify-center"
+                        animate={{ rotate: activeIndex !== null ? 0 : -360 }}
+                        transition={{
+                          duration: 60,
+                          repeat: activeIndex !== null ? 0 : Infinity,
+                          ease: "linear",
+                        }}
+                      >
+                        <Icon
+                          className={`h-6 w-6 transition-colors ${
+                            isActive ? "text-primary" : "text-muted"
+                          }`}
+                          strokeWidth={1.8}
+                        />
+                      </motion.span>
+                    </motion.button>
+                  </div>
                 )
               })}
             </motion.div>
           </motion.div>
 
-          {/* ---------- Center hub ---------- */}
           <div className="relative z-10 flex h-40 w-40 flex-col items-center justify-center rounded-full border border-primary/30 bg-surface-elevated shadow-[0_0_60px_-15px_var(--primary)]">
-            {/* Pulsing rings */}
             <motion.span
               aria-hidden
               className="absolute inset-0 rounded-full border border-primary/30"
@@ -235,8 +215,6 @@ function Technologies() {
                 delay: 0.8,
               }}
             />
-
-            {/* Animated icon + name swap */}
             <AnimatePresence mode="wait">
               <motion.div
                 key={active.id}
@@ -258,7 +236,6 @@ function Technologies() {
           </div>
         </div>
 
-        {/* Helper hint */}
         <motion.p
           variants={fadeUp}
           initial="hidden"
